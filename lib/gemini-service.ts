@@ -1,4 +1,5 @@
 // Gemini AI service for real AI processing with strict schema compliance
+console.log(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 export class GeminiService {
   private static instance: GeminiService;
   private apiKey: string;
