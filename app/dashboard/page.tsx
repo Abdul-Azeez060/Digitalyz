@@ -1,32 +1,38 @@
-'use client';
+"use client";
 
-import { useMemo, useEffect, useState } from 'react';
-import { ColumnDef } from '@tanstack/react-table';
-import { EditableDataGrid } from '@/components/data/editable-data-grid';
-import { DataModification } from '@/components/ai/data-modification';
-import { PhaseGanttChart } from '@/components/charts/phase-gantt-chart';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useData } from '@/contexts/data-context';
-import { Client, Worker, Task } from '@/types/models';
-import { EnhancedAIService } from '@/lib/enhanced-ai-service';
-import { 
-  Users, 
-  Briefcase, 
-  CheckSquare, 
-  AlertTriangle, 
+import { useMemo, useEffect, useState } from "react";
+import { ColumnDef } from "@tanstack/react-table";
+import { EditableDataGrid } from "@/components/data/editable-data-grid";
+import { DataModification } from "@/components/ai/data-modification";
+import { PhaseGanttChart } from "@/components/charts/phase-gantt-chart";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useData } from "@/contexts/data-context";
+import { Client, Worker, Task } from "@/types/models";
+import { EnhancedAIService } from "@/lib/enhanced-ai-service";
+import {
+  Users,
+  Briefcase,
+  CheckSquare,
+  AlertTriangle,
   CheckCircle,
   ArrowRight,
   Brain,
   Calendar,
   Wand2,
   Database,
-  Sparkles
-} from 'lucide-react';
-import { useRouter } from 'next/navigation';
+  Sparkles,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function DashboardPage() {
   const { state, dispatch } = useData();
@@ -34,158 +40,190 @@ export default function DashboardPage() {
   const [interlinkValidation, setInterlinkValidation] = useState<any[]>([]);
   const [isValidating, setIsValidating] = useState(false);
 
-  const hasData = state.clients.length > 0 || state.workers.length > 0 || state.tasks.length > 0;
+  const hasData =
+    state.clients.length > 0 ||
+    state.workers.length > 0 ||
+    state.tasks.length > 0;
 
-  const clientColumns: ColumnDef<Client>[] = useMemo(() => [
-    {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
-      accessorKey: 'name',
-      header: 'Name',
-    },
-    {
-      accessorKey: 'priority',
-      header: 'Priority',
-      cell: ({ row }) => (
-        <Badge className={`badge-modern ${row.original.priority > 3 ? 'badge-error' : 'badge-info'}`}>
-          {row.original.priority}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: 'budget',
-      header: 'Budget',
-      cell: ({ row }) => row.original.budget ? `₹${row.original.budget.toLocaleString()}` : '-',
-    },
-    {
-      accessorKey: 'groupTag',
-      header: 'Group',
-      cell: ({ row }) => row.original.groupTag ? (
-        <Badge className="badge-modern badge-info text-xs">
-          {row.original.groupTag}
-        </Badge>
-      ) : '-',
-    },
-    {
-      accessorKey: 'requestedTaskIds',
-      header: 'Requested Tasks',
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.requestedTaskIds?.slice(0, 2).map(taskId => (
-            <Badge key={taskId} className="badge-modern badge-success text-xs">
-              {taskId}
-            </Badge>
-          ))}
-          {row.original.requestedTaskIds?.length > 2 && (
+  const clientColumns: ColumnDef<Client>[] = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "ID",
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "priority",
+        header: "Priority",
+        cell: ({ row }) => (
+          <Badge
+            className={`badge-modern ${
+              row.original.priority > 3 ? "badge-error" : "badge-info"
+            }`}>
+            {row.original.priority}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "budget",
+        header: "Budget",
+        cell: ({ row }) =>
+          row.original.budget
+            ? `₹${row.original.budget.toLocaleString()}`
+            : "-",
+      },
+      {
+        accessorKey: "groupTag",
+        header: "Group",
+        cell: ({ row }) =>
+          row.original.groupTag ? (
             <Badge className="badge-modern badge-info text-xs">
-              +{row.original.requestedTaskIds.length - 2}
+              {row.original.groupTag}
             </Badge>
-          )}
-        </div>
-      ),
-    },
-  ], []);
+          ) : (
+            "-"
+          ),
+      },
+      {
+        accessorKey: "requestedTaskIds",
+        header: "Requested Tasks",
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.requestedTaskIds?.slice(0, 2).map((taskId) => (
+              <Badge
+                key={taskId}
+                className="badge-modern badge-success text-xs">
+                {taskId}
+              </Badge>
+            ))}
+            {row.original.requestedTaskIds?.length > 2 && (
+              <Badge className="badge-modern badge-info text-xs">
+                +{row.original.requestedTaskIds.length - 2}
+              </Badge>
+            )}
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
-  const workerColumns: ColumnDef<Worker>[] = useMemo(() => [
-    {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
-      accessorKey: 'name',
-      header: 'Name',
-    },
-    {
-      accessorKey: 'skills',
-      header: 'Skills',
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.skills.slice(0, 3).map(skill => (
-            <Badge key={skill} className="badge-modern badge-success text-xs">
-              {skill}
-            </Badge>
-          ))}
-          {row.original.skills.length > 3 && (
+  const workerColumns: ColumnDef<Worker>[] = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "ID",
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "skills",
+        header: "Skills",
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.skills.slice(0, 3).map((skill) => (
+              <Badge key={skill} className="badge-modern badge-success text-xs">
+                {skill}
+              </Badge>
+            ))}
+            {row.original.skills.length > 3 && (
+              <Badge className="badge-modern badge-info text-xs">
+                +{row.original.skills.length - 3}
+              </Badge>
+            )}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "capacity",
+        header: "Capacity",
+        cell: ({ row }) => `${row.original.capacity}h`,
+      },
+      {
+        accessorKey: "workerGroup",
+        header: "Group",
+        cell: ({ row }) =>
+          row.original.workerGroup ? (
             <Badge className="badge-modern badge-info text-xs">
-              +{row.original.skills.length - 3}
+              {row.original.workerGroup}
             </Badge>
-          )}
-        </div>
-      ),
-    },
-    {
-      accessorKey: 'capacity',
-      header: 'Capacity',
-      cell: ({ row }) => `${row.original.capacity}h`,
-    },
-    {
-      accessorKey: 'workerGroup',
-      header: 'Group',
-      cell: ({ row }) => row.original.workerGroup ? (
-        <Badge className="badge-modern badge-info text-xs">
-          {row.original.workerGroup}
-        </Badge>
-      ) : '-',
-    },
-    {
-      accessorKey: 'qualificationLevel',
-      header: 'Qualification',
-      cell: ({ row }) => row.original.qualificationLevel ? (
-        <Badge className="badge-modern badge-warning text-xs">
-          Level {row.original.qualificationLevel}
-        </Badge>
-      ) : '-',
-    },
-  ], []);
+          ) : (
+            "-"
+          ),
+      },
+      {
+        accessorKey: "qualificationLevel",
+        header: "Qualification",
+        cell: ({ row }) =>
+          row.original.qualificationLevel ? (
+            <Badge className="badge-modern badge-warning text-xs">
+              Level {row.original.qualificationLevel}
+            </Badge>
+          ) : (
+            "-"
+          ),
+      },
+    ],
+    []
+  );
 
-  const taskColumns: ColumnDef<Task>[] = useMemo(() => [
-    {
-      accessorKey: 'id',
-      header: 'ID',
-    },
-    {
-      accessorKey: 'name',
-      header: 'Name',
-    },
-    {
-      accessorKey: 'clientId',
-      header: 'Client',
-    },
-    {
-      accessorKey: 'duration',
-      header: 'Duration',
-      cell: ({ row }) => `${row.original.duration}h`,
-    },
-    {
-      accessorKey: 'category',
-      header: 'Category',
-      cell: ({ row }) => row.original.category ? (
-        <Badge className="badge-modern badge-info text-xs">
-          {row.original.category}
-        </Badge>
-      ) : '-',
-    },
-    {
-      accessorKey: 'maxConcurrent',
-      header: 'Max Concurrent',
-      cell: ({ row }) => row.original.maxConcurrent || 1,
-    },
-    {
-      accessorKey: 'preferredPhases',
-      header: 'Preferred Phases',
-      cell: ({ row }) => (
-        <div className="flex flex-wrap gap-1">
-          {row.original.preferredPhases?.map(phase => (
-            <Badge key={phase} className="badge-modern badge-info text-xs">
-              P{phase}
+  const taskColumns: ColumnDef<Task>[] = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "ID",
+      },
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
+      {
+        accessorKey: "clientId",
+        header: "Client",
+      },
+      {
+        accessorKey: "duration",
+        header: "Duration",
+        cell: ({ row }) => `${row.original.duration}h`,
+      },
+      {
+        accessorKey: "category",
+        header: "Category",
+        cell: ({ row }) =>
+          row.original.category ? (
+            <Badge className="badge-modern badge-info text-xs">
+              {row.original.category}
             </Badge>
-          ))}
-        </div>
-      ),
-    },
-  ], []);
+          ) : (
+            "-"
+          ),
+      },
+      {
+        accessorKey: "maxConcurrent",
+        header: "Max Concurrent",
+        cell: ({ row }) => row.original.maxConcurrent || 1,
+      },
+      {
+        accessorKey: "preferredPhases",
+        header: "Preferred Phases",
+        cell: ({ row }) => (
+          <div className="flex flex-wrap gap-1">
+            {row.original.preferredPhases?.map((phase) => (
+              <Badge key={phase} className="badge-modern badge-info text-xs">
+                P{phase}
+              </Badge>
+            ))}
+          </div>
+        ),
+      },
+    ],
+    []
+  );
 
   const runInterlinkValidation = async () => {
     setIsValidating(true);
@@ -197,9 +235,12 @@ export default function DashboardPage() {
         state.tasks
       );
       setInterlinkValidation(errors);
-      dispatch({ type: 'SET_VALIDATION_ERRORS', payload: [...state.validationErrors, ...errors] });
+      dispatch({
+        type: "SET_VALIDATION_ERRORS",
+        payload: [...state.validationErrors, ...errors],
+      });
     } catch (error) {
-      console.error('Validation error:', error);
+      console.error("Validation error:", error);
     } finally {
       setIsValidating(false);
     }
@@ -213,37 +254,42 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: 'Clients',
+      title: "Clients",
       value: state.clients.length,
       icon: Users,
-      color: 'text-blue-600',
-      change: '+12%'
+      color: "text-blue-600",
+      change: "+12%",
     },
     {
-      title: 'Workers',
+      title: "Workers",
       value: state.workers.length,
       icon: Briefcase,
-      color: 'text-green-600',
-      change: '+8%'
+      color: "text-green-600",
+      change: "+8%",
     },
     {
-      title: 'Tasks',
+      title: "Tasks",
       value: state.tasks.length,
       icon: CheckSquare,
-      color: 'text-purple-600',
-      change: '+24%'
+      color: "text-purple-600",
+      change: "+24%",
     },
     {
-      title: 'Validation Issues',
+      title: "Validation Issues",
       value: state.validationErrors.length,
       icon: state.validationErrors.length > 0 ? AlertTriangle : CheckCircle,
-      color: state.validationErrors.length > 0 ? 'text-red-600' : 'text-green-600',
-      change: state.validationErrors.length > 0 ? '+3' : '0'
-    }
+      color:
+        state.validationErrors.length > 0 ? "text-red-600" : "text-green-600",
+      change: state.validationErrors.length > 0 ? "+3" : "0",
+    },
   ];
 
-  const criticalErrors = state.validationErrors.filter(e => e.type === 'error').length;
-  const interlinkErrors = interlinkValidation.filter(e => e.type === 'error').length;
+  const criticalErrors = state.validationErrors.filter(
+    (e) => e.type === "error"
+  ).length;
+  const interlinkErrors = interlinkValidation.filter(
+    (e) => e.type === "error"
+  ).length;
 
   return (
     <div className="page-content">
@@ -253,17 +299,16 @@ export default function DashboardPage() {
           <div>
             <h1 className="page-title">Enhanced Data Dashboard</h1>
             <p className="page-subtitle">
-              View and manage your uploaded data with comprehensive AI-powered validation and editing
+              View and manage your uploaded data with comprehensive AI-powered
+              validation and editing
             </p>
           </div>
           <div className="flex items-center space-x-3">
             {hasData && (
               <Button
-                variant="outline"
                 onClick={runInterlinkValidation}
                 disabled={isValidating}
-                className="btn-outline"
-              >
+                className="btn-outline">
                 {isValidating ? (
                   <Brain className="h-4 w-4 mr-2 animate-pulse" />
                 ) : (
@@ -273,7 +318,9 @@ export default function DashboardPage() {
               </Button>
             )}
             {hasData && criticalErrors === 0 && (
-              <Button onClick={() => router.push('/rules')} className="btn-primary">
+              <Button
+                onClick={() => router.push("/rules")}
+                className="btn-primary">
                 Configure Rules
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
@@ -288,9 +335,12 @@ export default function DashboardPage() {
             <Database className="h-16 w-16 text-gray-400 mx-auto mb-6" />
             <h3 className="text-xl font-semibold mb-3">No Data Uploaded</h3>
             <p className="text-body mb-6">
-              Upload your CSV files to get started with enhanced data analysis and rule configuration
+              Upload your CSV files to get started with enhanced data analysis
+              and rule configuration
             </p>
-            <Button onClick={() => router.push('/upload')} className="btn-primary">
+            <Button
+              onClick={() => router.push("/upload")}
+              className="btn-primary">
               Upload Data
               <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
@@ -306,9 +356,13 @@ export default function DashboardPage() {
                   <Sparkles className="h-8 w-8 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-3">Enhanced AI Data Management</h3>
+                  <h3 className="text-xl font-bold mb-3">
+                    Enhanced AI Data Management
+                  </h3>
                   <p className="text-lg text-purple-100">
-                    Advanced validation, natural language modifications, intelligent error correction, and comprehensive relationship analysis
+                    Advanced validation, natural language modifications,
+                    intelligent error correction, and comprehensive relationship
+                    analysis
                   </p>
                 </div>
               </div>
@@ -323,7 +377,10 @@ export default function DashboardPage() {
                   <div className="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center">
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />
                   </div>
-                  <div className={`metric-change ${stat.change.startsWith('+') ? 'positive' : 'negative'}`}>
+                  <div
+                    className={`metric-change ${
+                      stat.change.startsWith("+") ? "positive" : "negative"
+                    }`}>
                     {stat.change}
                   </div>
                 </div>
@@ -338,9 +395,11 @@ export default function DashboardPage() {
             <Alert className="mb-8 border-red-200 bg-red-50 rounded-2xl">
               <AlertTriangle className="h-5 w-5 text-red-600" />
               <AlertDescription className="text-red-800 font-medium">
-                {criticalErrors + interlinkErrors} critical validation errors found. 
-                Please review and fix these issues before proceeding to rule configuration.
-                {interlinkErrors > 0 && ` ${interlinkErrors} relationship validation errors detected.`}
+                {criticalErrors + interlinkErrors} critical validation errors
+                found. Please review and fix these issues before proceeding to
+                rule configuration.
+                {interlinkErrors > 0 &&
+                  ` ${interlinkErrors} relationship validation errors detected.`}
               </AlertDescription>
             </Alert>
           )}
@@ -348,23 +407,33 @@ export default function DashboardPage() {
           {/* Enhanced Data Tables */}
           <Tabs defaultValue="clients" className="space-y-6">
             <TabsList className="grid w-full grid-cols-5 bg-white border border-gray-200 rounded-2xl p-1">
-              <TabsTrigger value="clients" className="flex items-center space-x-2 rounded-xl">
+              <TabsTrigger
+                value="clients"
+                className="flex items-center space-x-2 rounded-xl">
                 <Users className="h-4 w-4" />
                 <span>Clients ({state.clients.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="workers" className="flex items-center space-x-2 rounded-xl">
+              <TabsTrigger
+                value="workers"
+                className="flex items-center space-x-2 rounded-xl">
                 <Briefcase className="h-4 w-4" />
                 <span>Workers ({state.workers.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="tasks" className="flex items-center space-x-2 rounded-xl">
+              <TabsTrigger
+                value="tasks"
+                className="flex items-center space-x-2 rounded-xl">
                 <CheckSquare className="h-4 w-4" />
                 <span>Tasks ({state.tasks.length})</span>
               </TabsTrigger>
-              <TabsTrigger value="modifications" className="flex items-center space-x-2 rounded-xl">
+              <TabsTrigger
+                value="modifications"
+                className="flex items-center space-x-2 rounded-xl">
                 <Wand2 className="h-4 w-4" />
                 <span>AI Modify</span>
               </TabsTrigger>
-              <TabsTrigger value="timeline" className="flex items-center space-x-2 rounded-xl">
+              <TabsTrigger
+                value="timeline"
+                className="flex items-center space-x-2 rounded-xl">
                 <Calendar className="h-4 w-4" />
                 <span>Timeline</span>
               </TabsTrigger>
@@ -374,7 +443,9 @@ export default function DashboardPage() {
               <EditableDataGrid
                 data={state.clients}
                 columns={clientColumns}
-                validationErrors={state.validationErrors.filter(e => e.field.includes('client'))}
+                validationErrors={state.validationErrors.filter((e) =>
+                  e.field.includes("client")
+                )}
                 title="Enhanced Clients Data"
                 searchPlaceholder="Search clients..."
                 dataType="clients"
@@ -385,7 +456,9 @@ export default function DashboardPage() {
               <EditableDataGrid
                 data={state.workers}
                 columns={workerColumns}
-                validationErrors={state.validationErrors.filter(e => e.field.includes('worker'))}
+                validationErrors={state.validationErrors.filter((e) =>
+                  e.field.includes("worker")
+                )}
                 title="Enhanced Workers Data"
                 searchPlaceholder="Search workers..."
                 dataType="workers"
@@ -396,7 +469,9 @@ export default function DashboardPage() {
               <EditableDataGrid
                 data={state.tasks}
                 columns={taskColumns}
-                validationErrors={state.validationErrors.filter(e => e.field.includes('task'))}
+                validationErrors={state.validationErrors.filter((e) =>
+                  e.field.includes("task")
+                )}
                 title="Enhanced Tasks Data"
                 searchPlaceholder="Search tasks..."
                 dataType="tasks"
@@ -406,9 +481,15 @@ export default function DashboardPage() {
             <TabsContent value="modifications" className="space-y-6">
               <Tabs defaultValue="clients-mod" className="space-y-4">
                 <TabsList className="grid w-full grid-cols-3 bg-white border border-gray-200 rounded-2xl p-1">
-                  <TabsTrigger value="clients-mod" className="rounded-xl">Clients</TabsTrigger>
-                  <TabsTrigger value="workers-mod" className="rounded-xl">Workers</TabsTrigger>
-                  <TabsTrigger value="tasks-mod" className="rounded-xl">Tasks</TabsTrigger>
+                  <TabsTrigger value="clients-mod" className="rounded-xl">
+                    Clients
+                  </TabsTrigger>
+                  <TabsTrigger value="workers-mod" className="rounded-xl">
+                    Workers
+                  </TabsTrigger>
+                  <TabsTrigger value="tasks-mod" className="rounded-xl">
+                    Tasks
+                  </TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="clients-mod">

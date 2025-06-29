@@ -1,24 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { DataGrid } from '@/components/data/data-grid';
-import { AdvancedAIService } from '@/lib/advanced-ai-service';
-import { Search, Brain, Sparkles, Zap, Clock, Target } from 'lucide-react';
-import { ColumnDef } from '@tanstack/react-table';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { DataGrid } from "@/components/data/data-grid";
+import { AdvancedAIService } from "@/lib/advanced-ai-service";
+import { Search, Brain, Sparkles, Zap, Clock, Target } from "lucide-react";
+import { ColumnDef } from "@tanstack/react-table";
 
 interface AdvancedSearchProps {
   data: any[];
-  dataType: 'clients' | 'workers' | 'tasks';
+  dataType: "clients" | "workers" | "tasks";
   columns: ColumnDef<any>[];
 }
 
-export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps) {
-  const [query, setQuery] = useState('');
+export function AdvancedSearch({
+  data,
+  dataType,
+  columns,
+}: AdvancedSearchProps) {
+  const [query, setQuery] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [searchTime, setSearchTime] = useState<number>(0);
@@ -31,28 +41,32 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
     `${dataType} in phases 1-3 with capacity > 30`,
     `Overloaded ${dataType} with more than 8 hours per phase`,
     `${dataType} with missing required skills`,
-    `Critical ${dataType} with deadline this week`
+    `Critical ${dataType} with deadline this week`,
   ];
 
   const handleAdvancedSearch = async () => {
     if (!query.trim()) return;
-    
+
     setIsProcessing(true);
     const startTime = Date.now();
-    
+
     try {
       const aiService = AdvancedAIService.getInstance();
-      const results = await aiService.processAdvancedNaturalLanguageQuery(query, data, dataType);
-      
+      const results = await aiService.processAdvancedNaturalLanguageQuery(
+        query,
+        data,
+        dataType
+      );
+
       setSearchResults(results);
       setSearchTime(Date.now() - startTime);
-      
+
       // Add to history if not already present
       if (!queryHistory.includes(query)) {
-        setQueryHistory(prev => [query, ...prev.slice(0, 4)]);
+        setQueryHistory((prev) => [query, ...prev.slice(0, 4)]);
       }
     } catch (error) {
-      console.error('Advanced search error:', error);
+      console.error("Advanced search error:", error);
     } finally {
       setIsProcessing(false);
     }
@@ -92,15 +106,14 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
                 placeholder={`e.g., "All ${dataType} with duration > 5 hours and having phase 2 in their preferred phases"`}
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && handleAdvancedSearch()}
+                onKeyPress={(e) => e.key === "Enter" && handleAdvancedSearch()}
                 className="pl-12 h-12 text-base rounded-2xl border-gray-200 focus:border-purple-500"
               />
             </div>
-            <Button 
-              onClick={handleAdvancedSearch} 
+            <Button
+              onClick={handleAdvancedSearch}
               disabled={isProcessing || !query.trim()}
-              className="btn-primary h-12 px-6"
-            >
+              className="btn-primary h-12 px-6">
               {isProcessing ? (
                 <Brain className="h-5 w-5 animate-pulse" />
               ) : (
@@ -128,16 +141,16 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
 
           {/* Advanced Suggestions */}
           <div className="space-y-3">
-            <p className="font-medium text-gray-700">Advanced query examples:</p>
+            <p className="font-medium text-gray-700">
+              Advanced query examples:
+            </p>
             <div className="flex flex-wrap gap-2">
               {advancedSuggestions.map((suggestion, index) => (
                 <Button
                   key={index}
-                  variant="outline"
                   size="sm"
                   onClick={() => handleSuggestionClick(suggestion)}
-                  className="text-sm btn-outline"
-                >
+                  className="text-sm btn-outline">
                   <Sparkles className="h-3 w-3 mr-1" />
                   {suggestion}
                 </Button>
@@ -156,9 +169,10 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
                     variant="ghost"
                     size="sm"
                     onClick={() => handleHistoryClick(historyQuery)}
-                    className="text-xs text-gray-600 hover:text-gray-900"
-                  >
-                    {historyQuery.length > 50 ? `${historyQuery.substring(0, 50)}...` : historyQuery}
+                    className="text-xs text-gray-600 hover:text-gray-900">
+                    {historyQuery.length > 50
+                      ? `${historyQuery.substring(0, 50)}...`
+                      : historyQuery}
                   </Button>
                 ))}
               </div>
@@ -178,15 +192,15 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
                 {searchResults.length} matches
               </Badge>
             </CardTitle>
-            <CardDescription>
-              Results for: "{query}"
-            </CardDescription>
+            <CardDescription>Results for: "{query}"</CardDescription>
           </CardHeader>
           <CardContent>
             <DataGrid
               data={searchResults}
               columns={columns}
-              title={`${dataType.charAt(0).toUpperCase() + dataType.slice(1)} Results`}
+              title={`${
+                dataType.charAt(0).toUpperCase() + dataType.slice(1)
+              } Results`}
               searchPlaceholder={`Filter results...`}
             />
           </CardContent>
@@ -198,7 +212,8 @@ export function AdvancedSearch({ data, dataType, columns }: AdvancedSearchProps)
         <Alert className="border-yellow-200 bg-yellow-50 rounded-2xl">
           <Brain className="h-5 w-5 text-yellow-600" />
           <AlertDescription className="text-yellow-800">
-            No {dataType} found matching your advanced query. Try rephrasing or using different criteria.
+            No {dataType} found matching your advanced query. Try rephrasing or
+            using different criteria.
           </AlertDescription>
         </Alert>
       )}

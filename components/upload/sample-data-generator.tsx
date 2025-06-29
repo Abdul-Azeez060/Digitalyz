@@ -1,13 +1,27 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { EnhancedCSVParser } from '@/lib/enhanced-csv-parser';
-import { useData } from '@/contexts/data-context';
-import { Download, Database, Sparkles, FileText, Users, Briefcase, CheckSquare } from 'lucide-react';
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { EnhancedCSVParser } from "@/lib/enhanced-csv-parser";
+import { useData } from "@/contexts/data-context";
+import {
+  Download,
+  Database,
+  Sparkles,
+  FileText,
+  Users,
+  Briefcase,
+  CheckSquare,
+} from "lucide-react";
 
 export function SampleDataGenerator() {
   const { dispatch } = useData();
@@ -17,32 +31,31 @@ export function SampleDataGenerator() {
     setIsGenerating(true);
     try {
       const sampleData = EnhancedCSVParser.generateSampleData();
-      
+
       // Load into context
-      dispatch({ type: 'SET_CLIENTS', payload: sampleData.clients });
-      dispatch({ type: 'SET_WORKERS', payload: sampleData.workers });
-      dispatch({ type: 'SET_TASKS', payload: sampleData.tasks });
-      
+      dispatch({ type: "SET_CLIENTS", payload: sampleData.clients });
+      dispatch({ type: "SET_WORKERS", payload: sampleData.workers });
+      dispatch({ type: "SET_TASKS", payload: sampleData.tasks });
+
       // Simulate validation
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     } catch (error) {
-      console.error('Error generating sample data:', error);
+      console.error("Error generating sample data:", error);
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const downloadSampleCSV = (type: 'clients' | 'workers' | 'tasks') => {
+  const downloadSampleCSV = (type: "clients" | "workers" | "tasks") => {
     const sampleData = EnhancedCSVParser.generateSampleData();
     EnhancedCSVParser.exportToCSV(sampleData[type], `sample_${type}.csv`);
   };
 
   const downloadAllSamples = () => {
     const sampleData = EnhancedCSVParser.generateSampleData();
-    EnhancedCSVParser.exportToCSV(sampleData.clients, 'sample_clients.csv');
-    EnhancedCSVParser.exportToCSV(sampleData.workers, 'sample_workers.csv');
-    EnhancedCSVParser.exportToCSV(sampleData.tasks, 'sample_tasks.csv');
+    EnhancedCSVParser.exportToCSV(sampleData.clients, "sample_clients.csv");
+    EnhancedCSVParser.exportToCSV(sampleData.workers, "sample_workers.csv");
+    EnhancedCSVParser.exportToCSV(sampleData.tasks, "sample_tasks.csv");
   };
 
   return (
@@ -55,7 +68,8 @@ export function SampleDataGenerator() {
           <span>Sample Data Generator</span>
         </CardTitle>
         <CardDescription>
-          Generate comprehensive sample data with realistic relationships and edge cases
+          Generate comprehensive sample data with realistic relationships and
+          edge cases
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -63,22 +77,24 @@ export function SampleDataGenerator() {
         <div className="p-6 bg-gradient-to-r from-emerald-50 to-blue-50 rounded-2xl border border-emerald-200">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-emerald-900 mb-2">Quick Start with Sample Data</h3>
+              <h3 className="text-lg font-semibold text-emerald-900 mb-2">
+                Quick Start with Sample Data
+              </h3>
               <p className="text-emerald-700 text-sm">
-                Load pre-configured sample data with 3 clients, 4 workers, and 8 tasks including complex relationships
+                Load pre-configured sample data with 3 clients, 4 workers, and 8
+                tasks including complex relationships
               </p>
             </div>
-            <Button 
+            <Button
               onClick={generateAndLoadSampleData}
               disabled={isGenerating}
-              className="bg-emerald-600 hover:bg-emerald-700 text-white"
-            >
+              className="bg-emerald-600 hover:bg-emerald-700 text-white">
               {isGenerating ? (
                 <Sparkles className="h-4 w-4 mr-2 animate-pulse" />
               ) : (
                 <Database className="h-4 w-4 mr-2" />
               )}
-              {isGenerating ? 'Generating...' : 'Load Sample Data'}
+              {isGenerating ? "Generating..." : "Load Sample Data"}
             </Button>
           </div>
         </div>
@@ -129,35 +145,25 @@ export function SampleDataGenerator() {
         <div className="space-y-4">
           <h4 className="font-medium">Download Sample Templates</h4>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <Button 
-              variant="outline" 
-              onClick={() => downloadSampleCSV('clients')}
-              className="btn-outline"
-            >
+            <Button
+              onClick={() => downloadSampleCSV("clients")}
+              className="btn-outline">
               <FileText className="h-4 w-4 mr-2" />
               Clients CSV
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => downloadSampleCSV('workers')}
-              className="btn-outline"
-            >
+            <Button
+              onClick={() => downloadSampleCSV("workers")}
+              className="btn-outline">
               <FileText className="h-4 w-4 mr-2" />
               Workers CSV
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => downloadSampleCSV('tasks')}
-              className="btn-outline"
-            >
+            <Button
+              onClick={() => downloadSampleCSV("tasks")}
+              className="btn-outline">
               <FileText className="h-4 w-4 mr-2" />
               Tasks CSV
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={downloadAllSamples}
-              className="btn-outline"
-            >
+            <Button onClick={downloadAllSamples} className="btn-outline">
               <Download className="h-4 w-4 mr-2" />
               All Templates
             </Button>
@@ -168,8 +174,9 @@ export function SampleDataGenerator() {
         <Alert className="border-blue-200 bg-blue-50 rounded-2xl">
           <Database className="h-4 w-4 text-blue-600" />
           <AlertDescription className="text-blue-800">
-            <strong>Sample Data Includes:</strong> Complex relationships, circular dependency detection, 
-            skill mismatches, phase overloads, group constraints, and other edge cases for comprehensive testing.
+            <strong>Sample Data Includes:</strong> Complex relationships,
+            circular dependency detection, skill mismatches, phase overloads,
+            group constraints, and other edge cases for comprehensive testing.
           </AlertDescription>
         </Alert>
       </CardContent>
