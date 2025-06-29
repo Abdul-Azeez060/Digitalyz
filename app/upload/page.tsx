@@ -1,4 +1,5 @@
 "use client";
+export const dynamic = "force-static";
 
 import { EnhancedFileUpload } from "@/components/upload/enhanced-file-upload";
 import { SampleDataGenerator } from "@/components/upload/sample-data-generator";

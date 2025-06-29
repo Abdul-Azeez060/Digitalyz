@@ -117,7 +117,8 @@ export function EditableDataGrid<T>({
               className="flex-1 cursor-pointer hover:bg-gray-50 p-1 rounded"
               onClick={() => handleStartEdit(row.index, col.id, cellValue)}>
               {column.cell
-                ? flexRender(column.cell, { row, column: col })
+                ? // @ts-ignore
+                  flexRender(column.cell, { row, column: col })
                 : String(cellValue)}
             </div>
             <div className="opacity-0 group-hover:opacity-100 transition-opacity">

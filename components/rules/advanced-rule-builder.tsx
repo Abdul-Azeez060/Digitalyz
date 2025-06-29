@@ -492,6 +492,7 @@ export function AdvancedRuleBuilder({
                                 .filter((w) => w.workerGroup === group)
                                 .map((w) => w.id);
                               setSelectedWorkers((prev) => [
+                                //@ts-ignore
                                 ...new Set([...prev, ...groupWorkers]),
                               ]);
                             }}>

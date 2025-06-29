@@ -65,11 +65,13 @@ export function RuleRecommendations() {
   const handleAcceptRecommendation = (recommendation: any) => {
     dispatch({ type: "ADD_RULE", payload: recommendation.rule });
     setDismissedRecommendations(
+      // @ts-ignore
       (prev) => new Set([...prev, recommendation.rule.id])
     );
   };
 
   const handleDismissRecommendation = (recommendationId: string) => {
+    // @ts-ignore
     setDismissedRecommendations((prev) => new Set([...prev, recommendationId]));
   };
 

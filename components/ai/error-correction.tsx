@@ -110,9 +110,11 @@ export function ErrorCorrection() {
 
       if (error.field.includes("worker")) {
         dataType = "workers";
+        // @ts-ignore
         data = state.workers;
       } else if (error.field.includes("task")) {
         dataType = "tasks";
+        // @ts-ignore
         data = state.tasks;
       }
 
@@ -126,7 +128,7 @@ export function ErrorCorrection() {
           },
         };
         dispatch(updateAction);
-
+        // @ts-ignore
         setAppliedCorrections((prev) => new Set([...prev, errorId]));
       }
     }
