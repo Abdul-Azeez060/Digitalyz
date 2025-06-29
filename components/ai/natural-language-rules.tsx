@@ -168,7 +168,7 @@ export function NaturalLanguageRules() {
                       </div>
                       <div className="flex items-center justify-between">
                         <span className="font-medium">Type:</span>
-                        <Badge variant="outline">{result.rule.type}</Badge>
+                        <Badge>{result.rule.type}</Badge>
                       </div>
                       {result.rule.description && (
                         <div className="space-y-1">
@@ -214,10 +214,7 @@ export function NaturalLanguageRules() {
                           <span className="font-medium">Phases:</span>
                           <div className="flex flex-wrap gap-1">
                             {result.rule.phases.map((phase: number) => (
-                              <Badge
-                                key={phase}
-                                variant="outline"
-                                className="text-xs">
+                              <Badge key={phase} className="text-xs">
                                 P{phase}
                               </Badge>
                             ))}
@@ -241,7 +238,6 @@ export function NaturalLanguageRules() {
                         Add Rule
                       </Button>
                       <Button
-                        variant="outline"
                         onClick={handleRejectRule}
                         className="btn-outline">
                         Reject

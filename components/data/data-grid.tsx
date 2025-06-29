@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -12,14 +12,27 @@ import {
   SortingState,
   ColumnFiltersState,
   VisibilityState,
-} from '@tanstack/react-table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
-import { ChevronDown, ChevronUp, Search, AlertTriangle, CheckCircle } from 'lucide-react';
-import { ValidationError } from '@/types/models';
+} from "@tanstack/react-table";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
+import {
+  ChevronDown,
+  ChevronUp,
+  Search,
+  AlertTriangle,
+  CheckCircle,
+} from "lucide-react";
+import { ValidationError } from "@/types/models";
 
 interface DataGridProps<T> {
   data: T[];
@@ -36,12 +49,12 @@ export function DataGrid<T>({
   validationErrors = [],
   onUpdateRow,
   title,
-  searchPlaceholder = "Search..."
+  searchPlaceholder = "Search...",
 }: DataGridProps<T>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
-  const [globalFilter, setGlobalFilter] = useState('');
+  const [globalFilter, setGlobalFilter] = useState("");
 
   const table = useReactTable({
     data,
@@ -54,7 +67,7 @@ export function DataGrid<T>({
     getFilteredRowModel: getFilteredRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: 'includesString',
+    globalFilterFn: "includesString",
     state: {
       sorting,
       columnFilters,
@@ -64,11 +77,13 @@ export function DataGrid<T>({
   });
 
   const getRowErrors = (rowIndex: number) => {
-    return validationErrors.filter(error => error.row === rowIndex);
+    return validationErrors.filter((error) => error.row === rowIndex);
   };
 
   const getCellError = (rowIndex: number, columnId: string) => {
-    return validationErrors.find(error => error.row === rowIndex && error.column === columnId);
+    return validationErrors.find(
+      (error) => error.row === rowIndex && error.column === columnId
+    );
   };
 
   return (
@@ -85,7 +100,7 @@ export function DataGrid<T>({
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={searchPlaceholder}
-              value={globalFilter ?? ''}
+              value={globalFilter ?? ""}
               onChange={(e) => setGlobalFilter(e.target.value)}
               className="pl-9 w-64"
             />
@@ -104,26 +119,33 @@ export function DataGrid<T>({
                       <div
                         className={cn(
                           "flex items-center space-x-2",
-                          header.column.getCanSort() && "cursor-pointer select-none hover:text-foreground"
+                          header.column.getCanSort() &&
+                            "cursor-pointer select-none hover:text-foreground"
                         )}
-                        onClick={header.column.getToggleSortingHandler()}
-                      >
+                        onClick={header.column.getToggleSortingHandler()}>
                         <span>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
                         </span>
                         {header.column.getCanSort() && (
                           <div className="flex flex-col">
-                            <ChevronUp 
+                            <ChevronUp
                               className={cn(
                                 "h-3 w-3",
-                                header.column.getIsSorted() === 'asc' ? 'text-foreground' : 'text-muted-foreground'
-                              )} 
+                                header.column.getIsSorted() === "asc"
+                                  ? "text-foreground"
+                                  : "text-muted-foreground"
+                              )}
                             />
-                            <ChevronDown 
+                            <ChevronDown
                               className={cn(
                                 "h-3 w-3 -mt-1",
-                                header.column.getIsSorted() === 'desc' ? 'text-foreground' : 'text-muted-foreground'
-                              )} 
+                                header.column.getIsSorted() === "desc"
+                                  ? "text-foreground"
+                                  : "text-muted-foreground"
+                              )}
                             />
                           </div>
                         )}
@@ -139,34 +161,36 @@ export function DataGrid<T>({
               table.getRowModel().rows.map((row, rowIndex) => {
                 const rowErrors = getRowErrors(rowIndex);
                 const hasErrors = rowErrors.length > 0;
-                
+
                 return (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
                     className={cn(
-                      hasErrors && "bg-red-50 hover:bg-red-100 dark:bg-red-950/20"
-                    )}
-                  >
+                      hasErrors &&
+                        "bg-red-50 hover:bg-red-100 dark:bg-red-950/20"
+                    )}>
                     {row.getVisibleCells().map((cell) => {
                       const columnId = cell.column.id;
                       const cellError = getCellError(rowIndex, columnId);
-                      
+
                       return (
-                        <TableCell 
+                        <TableCell
                           key={cell.id}
                           className={cn(
                             "relative",
                             cellError && "border-l-2 border-l-red-500"
-                          )}
-                        >
+                          )}>
                           <div className="flex items-center space-x-2">
-                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
                             {cellError && (
                               <div className="flex items-center">
                                 <AlertTriangle className="h-4 w-4 text-red-500" />
                                 {cellError.autoFixable && (
-                                  <Badge variant="outline" className="ml-1 text-xs">
+                                  <Badge className="ml-1 text-xs">
                                     Auto-fixable
                                   </Badge>
                                 )}
@@ -175,7 +199,9 @@ export function DataGrid<T>({
                           </div>
                           {cellError && (
                             <div className="absolute left-0 top-full z-10 mt-1 p-2 bg-red-100 border border-red-200 rounded text-xs text-red-800 shadow-lg min-w-max">
-                              <div className="font-medium">{cellError.message}</div>
+                              <div className="font-medium">
+                                {cellError.message}
+                              </div>
                               {cellError.suggestedFix && (
                                 <div className="text-muted-foreground mt-1">
                                   Suggested: {cellError.suggestedFix}
@@ -191,7 +217,9 @@ export function DataGrid<T>({
               })
             ) : (
               <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center">
                   No results.
                 </TableCell>
               </TableRow>
@@ -202,7 +230,7 @@ export function DataGrid<T>({
 
       <div className="flex items-center justify-between space-x-2 py-4">
         <div className="flex items-center space-x-2">
-          <Badge variant="outline">
+          <Badge>
             <CheckCircle className="h-3 w-3 mr-1" />
             {table.getFilteredRowModel().rows.length} of {data.length} rows
           </Badge>
@@ -215,19 +243,15 @@ export function DataGrid<T>({
         </div>
         <div className="space-x-2">
           <Button
-            variant="outline"
             size="sm"
             onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
+            disabled={!table.getCanPreviousPage()}>
             Previous
           </Button>
           <Button
-            variant="outline"
             size="sm"
             onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
+            disabled={!table.getCanNextPage()}>
             Next
           </Button>
         </div>
